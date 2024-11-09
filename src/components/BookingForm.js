@@ -1,53 +1,58 @@
+// BookingForm.js
 import React, { useState } from 'react';
-import './BookingForm.css';
+import axios from 'axios';
 
-function BookingForm() {
+const BookingForm = () => {
   const [formData, setFormData] = useState({
-    device: '',
-    date: '',
-    time: '',
-    name: '',
-    address: '',
-    email: '',
-    mobile: '',
-    pincode: ''
+    serviceType: 'Laptop',    // Default to "Laptop"
+    date: '2023-12-01',       // Example default date
+    time: '10:00',            // Example default time
+    name: 'John Doe',         // Default name
+    address: '123 Main St',   // Default address
+    email: 'john@example.com',// Default email
+    phone: '1234567890',      // Default phone number
+    pincode: '123456'         // Default pincode
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    // Here you can add form submission logic
+    try {
+      await axios.post('/api/book', formData);
+      alert('Booking confirmed and message sent!');
+    } catch (error) {
+      console.error('Error booking service:', error);
+      alert('Failed to send booking message.');
+    }
   };
 
   return (
-    <div className="booking-form">
+    <form onSubmit={handleSubmit}>
       <h2>Select Your Requirement</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            <input type="radio" name="device" value="Laptop" onChange={handleChange} /> Laptop
-          </label>
-          <label>
-            <input type="radio" name="device" value="Desktop" onChange={handleChange} /> Desktop
-          </label>
-        </div>
-        <input type="date" name="date" onChange={handleChange} />
-        <input type="time" name="time" onChange={handleChange} />
-        
-        <input type="text" name="name" placeholder="Full Name" onChange={handleChange} />
-        <input type="text" name="address" placeholder="Flat / Building / Street" onChange={handleChange} />
-        <input type="email" name="email" placeholder="Email" onChange={handleChange} />
-        <input type="tel" name="mobile" placeholder="Mobile Number" onChange={handleChange} />
-        <input type="text" name="pincode" placeholder="Enter your pincode here" onChange={handleChange} />
+      <label>
+        <input type="radio" name="serviceType" value="Laptop" onChange={handleChange} checked={formData.serviceType === 'Laptop'} /> Laptop
+      </label>
+      <label>
+        <input type="radio" name="serviceType" value="Desktop" onChange={handleChange} checked={formData.serviceType === 'Desktop'} /> Desktop
+      </label>
 
-        <button type="submit">BOOK NOW</button>
-      </form>
-    </div>
+      <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+      <input type="time" name="time" value={formData.time} onChange={handleChange} required />
+      <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} required />
+      <input type="text" name="address" placeholder="Flat / Building / Street" value={formData.address} onChange={handleChange} required />
+      <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+      <input type="tel" name="phone" placeholder="Mobile Number" value={formData.phone} onChange={handleChange} required />
+      <input type="text" name="pincode" placeholder="Enter your pincode here" value={formData.pincode} onChange={handleChange} required />
+
+      <button type="submit">BOOK NOW</button>
+    </form>
   );
-}
+};
 
 export default BookingForm;
